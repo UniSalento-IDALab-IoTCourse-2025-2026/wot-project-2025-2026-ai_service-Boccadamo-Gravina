@@ -1,0 +1,1 @@
+Creare una cartella chiamata "dataset" allo stesso livello dello script di preprocessing, e poi eseguire il comando "python preprocessing.py --src dataset/per_nation_air_quality_health_dataset.csv --outdir output_preprocessing"
