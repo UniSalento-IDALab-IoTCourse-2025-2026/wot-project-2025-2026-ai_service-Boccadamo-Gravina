@@ -9,7 +9,7 @@ Le unita' di misura dell'esposizione sono diverse per ogni inquinante,
 pertanto non si possono sovrapporre sullo stesso asse x.
 
 Uso:
-  python plot_scatter.py --data-dir output_preprocessing --n 6000 --seed 42 --out ./images/scatter_originale.png
+  python plot_scatter.py --data-dir output_preprocessing --n 6000 --log-target --seed 42 --out ./images/scatter_originale.png
 """
 import argparse
 from pathlib import Path
@@ -22,7 +22,7 @@ POLLUTANTS = [("pm25", "PM2.5"), ("no2", "NO₂"), ("ozone", "Ozono"), ("hap", "
 POINT_COLOR = "#2B6CB0"
 INK, INK_SOFT, GRID = "#1F2937", "#6B7280", "#E5E7EB"
 
-def main(data_dir: Path, n: int, seed: int, out: Path) -> None:
+def main(data_dir: Path, n: int, seed: int, out: Path, log_target: bool) -> None:
     fig, axes = plt.subplots(2, 2, figsize=(11, 8), dpi=150)
     fig.patch.set_facecolor("white")
 
@@ -33,6 +33,8 @@ def main(data_dir: Path, n: int, seed: int, out: Path) -> None:
 
         ax.scatter(sub["Exposure Mean"], sub["Burden Mean"],
                    s=14, color=POINT_COLOR, alpha=0.45, linewidths=0)
+        if log_target:
+            ax.set_yscale("log")
         ax.set_title(f"{title}  (n = {len(sub)} di {len(df)})", loc="left", fontsize=11, color=INK)
         ax.set_xlabel(f"Exposure Mean ({unit})", fontsize=9, color=INK_SOFT)
         ax.set_ylabel("Burden Mean (DALY)", fontsize=9, color=INK_SOFT)
@@ -45,7 +47,8 @@ def main(data_dir: Path, n: int, seed: int, out: Path) -> None:
         for side in ("left", "bottom"):
             ax.spines[side].set_color(GRID)
 
-    fig.suptitle("Esposizione vs burden, scala originale",
+    scala = "target in scala logaritmica" if log_target else "scala originale"
+    fig.suptitle(f"Esposizione vs burden, {scala} (sottoinsieme casuale)",
                  x=0.01, ha="left", fontsize=13, color=INK)
     fig.tight_layout(rect=(0, 0, 1, 0.96))
     fig.savefig(out)
@@ -57,5 +60,6 @@ if __name__ == "__main__":
     ap.add_argument("--n", type=int, default=6000, help="punti casuali per inquinante")
     ap.add_argument("--seed", type=int, default=42, help="seed del campionamento")
     ap.add_argument("--out", type=Path, default=Path("./images/scatter_originale.png"), help="file immagine di output")
+    ap.add_argument("--log-target", action="store_true", help="mostra il burden in scala logaritmica")
     a = ap.parse_args()
-    main(a.data_dir, a.n, a.seed, a.out)
+    main(a.data_dir, a.n, a.seed, a.out, a.log_target)
