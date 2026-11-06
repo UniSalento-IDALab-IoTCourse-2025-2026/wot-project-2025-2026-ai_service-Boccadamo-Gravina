@@ -12,7 +12,7 @@ Passi:
   6. un CSV per ciascun inquinante + manifest.json.
 
 Uso:
-  python preprocess_dataset.py --src dataset/per_nation_air_quality_health_dataset.csv --outdir output_preprocessing
+  python preprocessing.py --src dataset/per_nation_air_quality_health_dataset.csv --outdir output_preprocessing
 """
 import argparse
 import json
